@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DebugWithFile": {
+      "commandName": "Project",
+      "commandLineArgs": "20220601182758.csv \"FakeQuery\""
+    }
+  }
+}
