@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AxTask", "AxTask.csproj", "{7FD10007-A093-43B2-845F-EFE8B1D321E4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AxTask", "AxTask\AxTask.csproj", "{60341444-85D1-41FB-9E66-D43C572E0311}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AxTests", "AxTests\AxTests.csproj", "{89DFEA2F-4F65-41E4-901C-BD10C499F571}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7FD10007-A093-43B2-845F-EFE8B1D321E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7FD10007-A093-43B2-845F-EFE8B1D321E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7FD10007-A093-43B2-845F-EFE8B1D321E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7FD10007-A093-43B2-845F-EFE8B1D321E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60341444-85D1-41FB-9E66-D43C572E0311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60341444-85D1-41FB-9E66-D43C572E0311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60341444-85D1-41FB-9E66-D43C572E0311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60341444-85D1-41FB-9E66-D43C572E0311}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89DFEA2F-4F65-41E4-901C-BD10C499F571}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89DFEA2F-4F65-41E4-901C-BD10C499F571}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89DFEA2F-4F65-41E4-901C-BD10C499F571}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89DFEA2F-4F65-41E4-901C-BD10C499F571}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

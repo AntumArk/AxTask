@@ -44,7 +44,24 @@ public class Automaton
     {
         Console.WriteLine("Usage: AxTask <filename> <query>");
     }
+    public void ParseFile(IEnumerable<string> lines)
+    {
+        var header = lines.First().Split(',');
+        var records = new List<Dictionary<string, string>>();
 
+        foreach (var line in lines.Skip(1))
+        {
+            var values = line.Split(',');
+            var record = new Dictionary<string, string>();
+
+            for (int i = 0; i < header.Length; i++)
+            {
+                record[header[i]] = values.Length > i ? values[i] : string.Empty;
+            }
+
+            records.Add(record);
+        }
+    }
     public void PerformQuery()
     {
         throw new NotImplementedException();
