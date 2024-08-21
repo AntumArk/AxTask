@@ -17,7 +17,8 @@
             }
             var logLines = automaton.ReadFile(fileName);
             // todo parse the input file. Input file is a list of strings, and is tabulated to columns.
-
+            automaton.ParseFile(logLines);
+            automaton.LogRecords = automaton.RemoveDuplicates(automaton.LogRecords);
             automaton.PerformQuery();
             // todo add search by substring for each column. Return column not found if the substring is not found in the column. The query can be in any syntax, like SQL of smth like that.
 

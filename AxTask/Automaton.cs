@@ -1,4 +1,6 @@
-﻿namespace AxTask;
+﻿using System.Text.Json;
+
+namespace AxTask;
 
 public class Automaton
 {
@@ -46,27 +48,57 @@ public class Automaton
     }
     public void ParseFile(IEnumerable<string> lines)
     {
-        var header = lines.First().Split(',');
-        var records = new List<Dictionary<string, string>>();
+        var linesList = lines.ToList();
+        var header = GetHeaderColumns(linesList);
 
-        foreach (var line in lines.Skip(1))
+        foreach (var line in linesList.Skip(1))
         {
             var values = line.Split(',');
-            var record = new Dictionary<string, string>();
-
-            for (int i = 0; i < header.Length; i++)
+            var logRecord = new LogRecord
             {
-                record[header[i]] = values.Length > i ? values[i] : string.Empty;
+                RecordValues = new Dictionary<string, string>()
+            };
+
+            for (var i = 0; i < header.Length; i++)
+            {
+                logRecord.RecordValues[header[i]] = values.Length > i ? values[i] : string.Empty;
             }
 
-            records.Add(record);
+            LogRecords.Add(logRecord);
+            
         }
     }
+
+    public List<LogRecord> RemoveDuplicates(List<LogRecord> logRecords)
+    {
+        var uniqueRecords = new HashSet<string>();
+        var result = new List<LogRecord>();
+
+        foreach (var record in logRecords)
+        {
+            var recordString = JsonSerializer.Serialize(record.RecordValues);
+            if (uniqueRecords.Add(recordString))
+            {
+                result.Add(record);
+            }
+        }
+
+        return result;
+    }
+    private string[] GetHeaderColumns(IEnumerable<string> lines)
+    {
+        var header = lines.First().Split(',');
+        Columns = header.ToList();
+        return header;
+    }
+
     public void PerformQuery()
     {
         throw new NotImplementedException();
     }
 
+    public List<string> Columns { get; set; } = [];
     public string FileName { get; set; } = string.Empty;
     public string Query { get; set; } = string.Empty;
+    public List<LogRecord> LogRecords { get; set; } = [];
 }
