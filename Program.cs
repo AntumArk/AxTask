@@ -8,12 +8,14 @@
             // todo read the input file
             var automaton = new Automaton();
             var areArgsCorrect=automaton.ParseArgs(args);
+            var fileName= automaton.FileName;
+
             if (!areArgsCorrect)
             {
                 Console.WriteLine("Invalid arguments");
                 return;
             }
-            automaton.ReadFile("input.txt");
+            var logLines = automaton.ReadFile(fileName);
             // todo parse the input file. Input file is a list of strings, and is tabulated to columns.
 
             automaton.PerformQuery();
