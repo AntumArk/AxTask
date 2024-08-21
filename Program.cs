@@ -1,12 +1,22 @@
 ﻿namespace AxTask
 {
     internal class Program
-    {
+    {       
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
             // todo read the input file
+            var automaton = new Automaton();
+            var areArgsCorrect=automaton.ParseArgs(args);
+            if (!areArgsCorrect)
+            {
+                Console.WriteLine("Invalid arguments");
+                return;
+            }
+            automaton.ReadFile("input.txt");
             // todo parse the input file. Input file is a list of strings, and is tabulated to columns.
+
+            automaton.PerformQuery();
             // todo add search by substring for each column. Return column not found if the substring is not found in the column. The query can be in any syntax, like SQL of smth like that.
 
             // todo process the input file
