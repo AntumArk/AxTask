@@ -94,7 +94,9 @@ public class Automaton
 
     public void PerformQuery()
     {
-        throw new NotImplementedException();
+        File.WriteAllText(LogRecords.Count + ".json",
+            JsonSerializer.Serialize(LogRecords,
+                options: new JsonSerializerOptions(JsonSerializerDefaults.Web)));
     }
 
     public List<string> Columns { get; set; } = [];
