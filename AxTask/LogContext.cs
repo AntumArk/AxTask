@@ -7,6 +7,7 @@ namespace AxTask;
 public class LogContext : DbContext
 {
     public DbSet<LogRecord> LogRecords { get; set; }
+    public DbSet<QueryResult> QueryResults { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlite("Data Source=logs.db");
@@ -27,10 +28,17 @@ public class LogContext : DbContext
             .HasConversion(
                 v => JsonSerializer.Serialize(v, options),
                 v => JsonSerializer.Deserialize<Dictionary<string, string>>(v, options));
+
+        modelBuilder.Entity<QueryResult>()
+            .ToTable("QueryResults")
+            .Property(q => q.JsonData)
+            .HasConversion(
+                v => v,
+                v => v); 
     }
 
     public void EnsureLogRecordsTableCreated()
     {
-        Database.EnsureCreated();
+        Database.Migrate();
     }
 }

@@ -116,13 +116,26 @@ public class Automaton(IDbHelper dbHelper)
         JsonSerializerOptions jsonSerializerOptions = new()
         {
             WriteIndented = true,
-
         };
-        var json = JsonSerializer.Serialize(Results, jsonSerializerOptions);
-        File.WriteAllText(Results.Count() + ".json",
-            json);
+
+        var json = JsonSerializer.Serialize(new
+        {
+            query = Query,
+            resultsCount = Results.Count,
+            results = Results
+        }, jsonSerializerOptions);
+
+        File.WriteAllText(Results.Count + ".json", json);
+
         Console.WriteLine("Query results: ");
         Console.WriteLine(json);
+        QueryResult queryResult = new()
+        {
+            JsonData = json,
+            TimeOfEntry = DateTime.Now
+
+        };
+        dbHelper.SaveQueryResults(queryResult);
     }
 
     public List<string> Columns { get; set; } = [];

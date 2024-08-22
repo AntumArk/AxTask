@@ -7,6 +7,6 @@ public interface IDbHelper
     IQueryable<LogRecord> DoSQL(string sql);
     List<LogRecord> SearchBySubstring(string substring);
     List<LogRecord> GetBySeverity(int severity);
-
+    void SaveQueryResults(QueryResult queryResult);
     void Clear();
 }

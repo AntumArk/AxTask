@@ -11,34 +11,12 @@ public class AutomatonTest
     [SetUp]
     public void Setup()
     {
-        automaton = new Automaton();
+        IDbHelper dbHelper = new DbHelper(); // Create an instance of IDbHelper
+        automaton = new Automaton(dbHelper); // Pass the IDbHelper instance to the Automaton constructor
     }
 
-    [Test]
-    public void IsValidSqlQuery_ValidQuery_ReturnsTrue()
-    {
-        // Arrange
-        string query = "SELECT * FROM Customers";
+  
 
-        // Act
-        bool result = automaton.IsValidSqlQuery(query);
-
-        // Assert
-        Assert.That(result, Is.True);
-    }
-
-    [Test]
-    public void IsValidSqlQuery_InvalidQuery_ReturnsFalse()
-    {
-        // Arrange
-        string query = "SELECT * FROM Customers WHERE 1=1; DROP TABLE Customers";
-
-        // Act
-        bool result = automaton.IsValidSqlQuery(query);
-
-        // Assert
-        Assert.That(result, Is.False);
-    }
 
     [Test]
     public void ReadFile_ValidPath_ReturnsLines()

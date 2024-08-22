@@ -17,7 +17,11 @@ public class DbHelper : IDbHelper
         logContext.LogRecords.AddRange(logRecords);
         logContext.SaveChanges();
     }
-
+    public void SaveQueryResults(QueryResult queryResult)
+    {
+        logContext.QueryResults.Add(queryResult);
+        logContext.SaveChanges();
+    }
     public List<LogRecord> GetLogRecords()
     {
         return logContext.LogRecords.ToList();
