@@ -62,7 +62,6 @@ public class DbHelper : IDbHelper
 
     public void Clear()
     {
-        logContext.LogRecords.RemoveRange(logContext.LogRecords);
-        logContext.SaveChanges();
+        logContext.Database.ExecuteSqlRaw("DELETE FROM LogRecords");
     }
 }
