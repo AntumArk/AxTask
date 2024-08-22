@@ -15,7 +15,7 @@ public class Automaton(IDbHelper dbHelper)
     public string FileName { get; set; } = string.Empty;
     public string Query { get; set; } = string.Empty;
     public List<LogRecord> LogRecords { get; set; } = [];
-    public List<LogRecord> Results { get; set; }
+    public List<LogRecord> Results { get; set; } = [];
 
     public void CheckIfColumnExists(string sql)
     {
