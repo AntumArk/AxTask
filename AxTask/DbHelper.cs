@@ -2,8 +2,16 @@
 
 namespace AxTask;
 
-public class DbHelper(LogContext logContext) : IDbHelper
+public class DbHelper : IDbHelper
 {
+    private readonly LogContext logContext;
+
+    public DbHelper(LogContext logContext)
+    {
+        this.logContext = logContext;
+        this.logContext.EnsureLogRecordsTableCreated();
+    }
+
     public void SaveLogRecords(List<LogRecord> logRecords)
     {
         logContext.LogRecords.AddRange(logRecords);
