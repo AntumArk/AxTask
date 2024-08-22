@@ -15,6 +15,10 @@
     "FakeKey": {
       "commandName": "Project",
       "commandLineArgs": "20220601182758.csv \"SELECT * FROM LogRecords WHERE RecordValues->>'dsa' = '5'\""
+    },
+    "Example": {
+      "commandName": "Project",
+      "commandLineArgs": "20220601182758.csv \"SELECT * FROM LogRecords WHERE RecordValues->>'signatureId' LIKE '%4608%'\""
     }
   }
 }
