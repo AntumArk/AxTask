@@ -120,9 +120,9 @@ public class Automaton(IDbHelper dbHelper)
 
         var json = JsonSerializer.Serialize(new
         {
-            query = Query,
+            searchQuery = Query,
             resultsCount = Results.Count,
-            results = Results
+            result = Results
         }, jsonSerializerOptions);
 
         File.WriteAllText(Results.Count + ".json", json);
