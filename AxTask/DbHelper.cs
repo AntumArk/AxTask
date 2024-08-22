@@ -27,7 +27,7 @@ public class DbHelper : IDbHelper
         return logContext.LogRecords.ToList();
     } 
 
-    public IQueryable<LogRecord> DoSQL(string sql)
+    public IQueryable<LogRecord> DoSql(string sql)
     {       
         try
         {

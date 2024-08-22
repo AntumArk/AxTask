@@ -101,7 +101,7 @@ public class Automaton(IDbHelper dbHelper)
     {
         try
         {
-            Results = dbHelper.DoSQL(Query).ToList();
+            Results = dbHelper.DoSql(Query).ToList();
             SaveResults();
         }
         catch (SqliteException ex)
