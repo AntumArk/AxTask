@@ -3,6 +3,14 @@
     "DebugWithFile": {
       "commandName": "Project",
       "commandLineArgs": "20220601182758.csv \"FakeQuery\""
+    },
+    "Debug with query": {
+      "commandName": "Project",
+      "commandLineArgs": "20220601182758.csv \"SELECT * FROM LogRecords WHERE RecordValues->>'severity' = '5'\""
+    },
+    "DebugSQLFetchAll": {
+      "commandName": "Project",
+      "commandLineArgs": "20220601182758.csv \"SELECT * FROM LogRecords\""
     }
   }
 }
