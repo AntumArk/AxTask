@@ -17,18 +17,20 @@ public class DbHelper : IDbHelper
         logContext.LogRecords.AddRange(logRecords);
         logContext.SaveChanges();
     }
+
     public void SaveQueryResults(QueryResult queryResult)
     {
         logContext.QueryResults.Add(queryResult);
         logContext.SaveChanges();
     }
+
     public List<LogRecord> GetLogRecords()
     {
         return logContext.LogRecords.ToList();
-    } 
+    }
 
-    public IQueryable<LogRecord> DoSQL(string sql)
-    {       
+    public IQueryable<LogRecord> DoSql(string sql)
+    {
         try
         {
             return logContext.LogRecords.FromSqlRaw(sql);
@@ -42,7 +44,8 @@ public class DbHelper : IDbHelper
 
     public List<LogRecord> SearchBySubstring(string substring)
     {
-        return logContext.LogRecords.Where(record => record.RecordValues.Any(value => value.Value.Contains(substring))).ToList();
+        return logContext.LogRecords.Where(record => record.RecordValues.Any(value => value.Value.Contains(substring)))
+            .ToList();
     }
 
     public List<LogRecord> GetBySeverity(int severity)
@@ -59,7 +62,6 @@ public class DbHelper : IDbHelper
 
     public void Clear()
     {
-        logContext.LogRecords.RemoveRange(logContext.LogRecords);
-        logContext.SaveChanges();
+        logContext.Database.ExecuteSqlRaw("DELETE FROM LogRecords");
     }
 }

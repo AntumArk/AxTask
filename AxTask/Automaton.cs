@@ -1,13 +1,22 @@
-﻿using Microsoft.Data.Sqlite;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+﻿using System.Text.Json;
 using System.Text.RegularExpressions;
+using Microsoft.Data.Sqlite;
 
 namespace AxTask;
 
 public class Automaton(IDbHelper dbHelper)
 {
-  
+    private readonly JsonSerializerOptions options = new()
+    {
+        WriteIndented = true
+    };
+
+    public List<string> Columns { get; set; } = [];
+    public string FileName { get; set; } = string.Empty;
+    public string Query { get; set; } = string.Empty;
+    public List<LogRecord> LogRecords { get; set; } = [];
+    public List<LogRecord> Results { get; set; } = [];
+
     public void CheckIfColumnExists(string sql)
     {
         var regex = new Regex(@"RecordValues->>'(?<column>[^']*)'");
@@ -17,22 +26,14 @@ public class Automaton(IDbHelper dbHelper)
         foreach (Match match in matches)
         {
             var column = match.Groups["column"].Value;
-            if (!columns.Contains(column))
-            {
-                throw new InvalidOperationException($"Column '{column}' does not exists");
-            }
+            if (!columns.Contains(column)) throw new InvalidOperationException($"Column '{column}' does not exists");
         }
     }
+
     public IEnumerable<string> ReadFile(string path)
     {
-        if (string.IsNullOrEmpty(path))
-        {
-            throw new ArgumentNullException(nameof(path),"Provided file string is empty");
-        }
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException("File not found", path);
-        }
+        if (string.IsNullOrEmpty(path)) throw new ArgumentNullException(nameof(path), "Provided file string is empty");
+        if (!File.Exists(path)) throw new FileNotFoundException("File not found", path);
         var lines = File.ReadAllLines(path);
         return lines.ToList();
     }
@@ -44,14 +45,17 @@ public class Automaton(IDbHelper dbHelper)
             PrintHelp();
             return false;
         }
+
         FileName = args[0];
-        Query = args[1];        
+        Query = args[1];
         return true;
     }
+
     public void PrintHelp()
     {
         Console.WriteLine("Usage: AxTask <filename> \"<query>\"");
     }
+
     public void ParseFile(IEnumerable<string> lines)
     {
         var linesList = lines.ToList();
@@ -62,16 +66,16 @@ public class Automaton(IDbHelper dbHelper)
             var values = line.Split(',');
             var logRecord = new LogRecord
             {
-                RecordValues = new Dictionary<string, string>()
+                RecordValues = new Dictionary<string, string>(header.Length)
             };
 
             for (var i = 0; i < header.Length; i++)
             {
-                logRecord.RecordValues[header[i]] = values.Length > i ? values[i] : string.Empty;
+                var value = (i < values.Length) ? values[i] : string.Empty;
+                logRecord.RecordValues[header[i]] = value;
             }
 
             LogRecords.Add(logRecord);
-            
         }
     }
 
@@ -83,14 +87,12 @@ public class Automaton(IDbHelper dbHelper)
         foreach (var record in logRecords)
         {
             var recordString = JsonSerializer.Serialize(record.RecordValues);
-            if (uniqueRecords.Add(recordString))
-            {
-                result.Add(record);
-            }
+            if (uniqueRecords.Add(recordString)) result.Add(record);
         }
 
         return result;
     }
+
     private string[] GetHeaderColumns(IEnumerable<string> lines)
     {
         var header = lines.First().Split(',');
@@ -102,7 +104,7 @@ public class Automaton(IDbHelper dbHelper)
     {
         try
         {
-            Results = dbHelper.DoSQL(Query).ToList();
+            Results = dbHelper.DoSql(Query).ToList();
             SaveResults();
         }
         catch (SqliteException ex)
@@ -116,7 +118,7 @@ public class Automaton(IDbHelper dbHelper)
     {
         JsonSerializerOptions jsonSerializerOptions = new()
         {
-            WriteIndented = true,
+            WriteIndented = true
         };
 
         var json = JsonSerializer.Serialize(new
@@ -134,7 +136,6 @@ public class Automaton(IDbHelper dbHelper)
         {
             JsonData = json,
             TimeOfEntry = DateTime.Now
-
         };
         dbHelper.SaveQueryResults(queryResult);
     }
@@ -147,8 +148,8 @@ public class Automaton(IDbHelper dbHelper)
         {
             Console.BackgroundColor = ConsoleColor.Red; // Set console background color to red
             Console.WriteLine($"Found {results.Count} records with severity {severity} or higher");
-            
-            
+
+
             foreach (var result in results)
             {
                 Console.BackgroundColor = ConsoleColor.DarkRed; // Set console background color to dark red
@@ -156,20 +157,10 @@ public class Automaton(IDbHelper dbHelper)
                 Console.WriteLine();
                 Console.ResetColor(); // Reset console background color to default
             }
-            
         }
         else
         {
             Console.WriteLine($"No records found with severity {severity}");
         }
     }
-    public List<string> Columns { get; set; } = [];
-    public string FileName { get; set; } = string.Empty;
-    public string Query { get; set; } = string.Empty;
-    public List<LogRecord> LogRecords { get; set; } = [];
-    public List<LogRecord> Results { get; set; }
-    private readonly JsonSerializerOptions options = new()
-    {
-        WriteIndented = true
-    };
 }
