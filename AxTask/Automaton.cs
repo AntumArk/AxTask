@@ -1,31 +1,26 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 namespace AxTask;
 
 public class Automaton(IDbHelper dbHelper)
 {
-   /// <summary>
-    /// Checks if user search input is actually a valid SQL query.
-    /// Use this for database layer to read and write the files.
-    /// </summary>
-    /// <param name="query"></param>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public bool IsValidSqlQuery(string query)
+  
+    public void CheckIfColumnExists(string sql)
     {
-        return true;
-        var command = new SqliteCommand(query);
-        try
-        {
-            command.ExecuteNonQuery();
-        }
-        catch (SqliteException)
-        {
-            return false;
-        }
+        var regex = new Regex(@"RecordValues->>'(?<column>[^']*)'");
+        var matches = regex.Matches(sql);
+        var columns = LogRecords.First().RecordValues.Keys;
 
-        return !string.IsNullOrEmpty(query);
+        foreach (Match match in matches)
+        {
+            var column = match.Groups["column"].Value;
+            if (!columns.Contains(column))
+            {
+                throw new InvalidOperationException($"Column '{column}' does not exists");
+            }
+        }
     }
     public IEnumerable<string> ReadFile(string path)
     {
@@ -49,7 +44,7 @@ public class Automaton(IDbHelper dbHelper)
             return false;
         }
         FileName = args[0];
-        Query = args[1];
+        Query = args[1];        
         return true;
     }
     public void PrintHelp()
@@ -104,22 +99,14 @@ public class Automaton(IDbHelper dbHelper)
 
     public void PerformQuery()
     {
-        if (IsValidSqlQuery(Query))
+        try
         {
-          
-            try
-            {
-                Results = dbHelper.DoSQL(Query).ToList();
-                SaveResults();
-            }
-            catch (SqliteException ex)
-            {
-                Console.WriteLine($"SQL Error: {ex.Message}");
-            }
+            Results = dbHelper.DoSQL(Query).ToList();
+            SaveResults();
         }
-        else
+        catch (SqliteException ex)
         {
-            Console.WriteLine("Invalid query");
+            Console.WriteLine($"SQL Error: {ex.Message}");
             PrintHelp();
         }
     }

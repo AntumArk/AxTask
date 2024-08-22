@@ -19,6 +19,15 @@
 
             var logLines = automaton.ReadFile(fileName);
             automaton.ParseFile(logLines);
+            try
+            {
+                automaton.CheckIfColumnExists(automaton.Query);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
             automaton.LogRecords = automaton.RemoveDuplicates(automaton.LogRecords);
             dbHelper.SaveLogRecords(automaton.LogRecords);
             automaton.PerformQuery();

@@ -11,6 +11,10 @@
     "DebugSQLFetchAll": {
       "commandName": "Project",
       "commandLineArgs": "20220601182758.csv \"SELECT * FROM LogRecords\""
+    },
+    "FakeKey": {
+      "commandName": "Project",
+      "commandLineArgs": "20220601182758.csv \"SELECT * FROM LogRecords WHERE RecordValues->>'dsa' = '5'\""
     }
   }
 }
