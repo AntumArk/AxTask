@@ -1,5 +1,6 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace AxTask;
@@ -137,10 +138,38 @@ public class Automaton(IDbHelper dbHelper)
         };
         dbHelper.SaveQueryResults(queryResult);
     }
+    // ...
 
+    public void AlertBySeverity(int severity)
+    {
+        var results = dbHelper.GetBySeverity(severity);
+        if (results.Count > 0)
+        {
+            Console.BackgroundColor = ConsoleColor.Red; // Set console background color to red
+            Console.WriteLine($"Found {results.Count} records with severity {severity} or higher");
+            
+            
+            foreach (var result in results)
+            {
+                Console.BackgroundColor = ConsoleColor.DarkRed; // Set console background color to dark red
+                Console.WriteLine(JsonSerializer.Serialize(result.RecordValues, options));
+                Console.WriteLine();
+                Console.ResetColor(); // Reset console background color to default
+            }
+            
+        }
+        else
+        {
+            Console.WriteLine($"No records found with severity {severity}");
+        }
+    }
     public List<string> Columns { get; set; } = [];
     public string FileName { get; set; } = string.Empty;
     public string Query { get; set; } = string.Empty;
     public List<LogRecord> LogRecords { get; set; } = [];
-    public List<LogRecord> Results { get; set; } 
+    public List<LogRecord> Results { get; set; }
+    private readonly JsonSerializerOptions options = new()
+    {
+        WriteIndented = true
+    };
 }

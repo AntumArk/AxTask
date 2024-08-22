@@ -31,6 +31,7 @@
             automaton.LogRecords = automaton.RemoveDuplicates(automaton.LogRecords);
             dbHelper.SaveLogRecords(automaton.LogRecords);
             automaton.PerformQuery();
+            automaton.AlertBySeverity(10);
             // todo add search by substring for each column. Return column not found if the substring is not found in the column. The query can be in any syntax, like SQL of smth like that.
 
             // todo process the input file

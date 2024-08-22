@@ -47,7 +47,14 @@ public class DbHelper : IDbHelper
 
     public List<LogRecord> GetBySeverity(int severity)
     {
-        return logContext.LogRecords.Where(record => record.RecordValues.ContainsKey("severity") && record.RecordValues["severity"] == severity.ToString()).ToList();
+        var records = logContext.LogRecords
+            .AsEnumerable()
+            .Where(record => record.RecordValues.Keys.Contains("severity"));
+        return records.Where(record =>
+            !string.IsNullOrEmpty(record.RecordValues["severity"]) &&
+            int.TryParse(record.RecordValues["severity"], out var severityValue) &&
+            severityValue >= severity
+        ).ToList();
     }
 
     public void Clear()
