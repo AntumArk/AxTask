@@ -8,16 +8,14 @@ internal class Program
         IDbHelper dbHelper = new DbHelper(new LogContext());
         dbHelper.Clear();
         var automaton = new Automaton(dbHelper);
-        var areArgsCorrect = automaton.ParseArgs(args);
-        var fileName = automaton.FileName;
 
-        if (!areArgsCorrect)
+        if (!automaton.ParseArgs(args))
         {
             Console.WriteLine("Invalid arguments");
             return;
         }
 
-        var logLines = automaton.ReadFile(fileName);
+        var logLines = automaton.ReadFile(automaton.FileName);
         automaton.ParseFile(logLines);
         try
         {
