@@ -1,11 +1,11 @@
-﻿using System.Text.Json;
+﻿using Microsoft.Data.Sqlite;
+using System.Text.Json;
 
 namespace AxTask;
 
-public class Automaton
+public class Automaton(IDbHelper dbHelper)
 {
-  
-    /// <summary>
+   /// <summary>
     /// Checks if user search input is actually a valid SQL query.
     /// Use this for database layer to read and write the files.
     /// </summary>
@@ -14,8 +14,18 @@ public class Automaton
     /// <exception cref="NotImplementedException"></exception>
     public bool IsValidSqlQuery(string query)
     {
-        throw new NotImplementedException();
         return true;
+        var command = new SqliteCommand(query);
+        try
+        {
+            command.ExecuteNonQuery();
+        }
+        catch (SqliteException)
+        {
+            return false;
+        }
+
+        return !string.IsNullOrEmpty(query);
     }
     public IEnumerable<string> ReadFile(string path)
     {
@@ -44,7 +54,7 @@ public class Automaton
     }
     public void PrintHelp()
     {
-        Console.WriteLine("Usage: AxTask <filename> <query>");
+        Console.WriteLine("Usage: AxTask <filename> \"<query>\"");
     }
     public void ParseFile(IEnumerable<string> lines)
     {
@@ -94,13 +104,43 @@ public class Automaton
 
     public void PerformQuery()
     {
-        File.WriteAllText(LogRecords.Count + ".json",
-            JsonSerializer.Serialize(LogRecords,
-                options: new JsonSerializerOptions(JsonSerializerDefaults.Web)));
+        if (IsValidSqlQuery(Query))
+        {
+          
+            try
+            {
+                Results = dbHelper.DoSQL(Query).ToList();
+                SaveResults();
+            }
+            catch (SqliteException ex)
+            {
+                Console.WriteLine($"SQL Error: {ex.Message}");
+            }
+        }
+        else
+        {
+            Console.WriteLine("Invalid query");
+            PrintHelp();
+        }
+    }
+
+    private void SaveResults()
+    {
+        JsonSerializerOptions jsonSerializerOptions = new()
+        {
+            WriteIndented = true,
+
+        };
+        var json = JsonSerializer.Serialize(Results, jsonSerializerOptions);
+        File.WriteAllText(Results.Count() + ".json",
+            json);
+        Console.WriteLine("Query results: ");
+        Console.WriteLine(json);
     }
 
     public List<string> Columns { get; set; } = [];
     public string FileName { get; set; } = string.Empty;
     public string Query { get; set; } = string.Empty;
     public List<LogRecord> LogRecords { get; set; } = [];
+    public List<LogRecord> Results { get; set; } 
 }

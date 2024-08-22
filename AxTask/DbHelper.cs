@@ -21,13 +21,19 @@ public class DbHelper : IDbHelper
     public List<LogRecord> GetLogRecords()
     {
         return logContext.LogRecords.ToList();
-    }
+    } 
 
- 
-
-    public List<LogRecord> DoSQL(string sql)
-    {
-        return logContext.LogRecords.FromSqlRaw(sql).ToList();
+    public IQueryable<LogRecord> DoSQL(string sql)
+    {       
+        try
+        {
+            return logContext.LogRecords.FromSqlRaw(sql);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
     }
 
     public List<LogRecord> SearchBySubstring(string substring)

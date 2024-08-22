@@ -5,8 +5,9 @@
         static void Main(string[] args)
         {
             Console.WriteLine("Hello, World!");
-            // todo read the input file
-            var automaton = new Automaton();
+            IDbHelper dbHelper = new DbHelper(new LogContext());
+            dbHelper.Clear();
+            var automaton = new Automaton(dbHelper);
             var areArgsCorrect=automaton.ParseArgs(args);
             var fileName= automaton.FileName;
 
@@ -16,18 +17,11 @@
                 return;
             }
 
-            IDbHelper dbHelper = new DbHelper(new LogContext());
-
-
-
-
-
             var logLines = automaton.ReadFile(fileName);
-            // todo parse the input file. Input file is a list of strings, and is tabulated to columns.
             automaton.ParseFile(logLines);
             automaton.LogRecords = automaton.RemoveDuplicates(automaton.LogRecords);
-            automaton.PerformQuery();
             dbHelper.SaveLogRecords(automaton.LogRecords);
+            automaton.PerformQuery();
             // todo add search by substring for each column. Return column not found if the substring is not found in the column. The query can be in any syntax, like SQL of smth like that.
 
             // todo process the input file
