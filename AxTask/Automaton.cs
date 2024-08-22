@@ -66,11 +66,14 @@ public class Automaton(IDbHelper dbHelper)
             var values = line.Split(',');
             var logRecord = new LogRecord
             {
-                RecordValues = new Dictionary<string, string>()
+                RecordValues = new Dictionary<string, string>(header.Length)
             };
 
             for (var i = 0; i < header.Length; i++)
-                logRecord.RecordValues[header[i]] = values.Length > i ? values[i] : string.Empty;
+            {
+                var value = (i < values.Length) ? values[i] : string.Empty;
+                logRecord.RecordValues[header[i]] = value;
+            }
 
             LogRecords.Add(logRecord);
         }
