@@ -30,7 +30,7 @@ internal class Program
                 
         try
         {
-            automaton.Execute();
+            automaton.Execute(removeDuplicates);
         }
         catch (Exception e)
         {
@@ -38,7 +38,6 @@ internal class Program
             throw;
         }
 
-        automaton.LogRecords = automaton.RemoveDuplicates(automaton.LogRecords);
         dbHelper.SaveLogRecords(automaton.LogRecords);
         automaton.PerformQuery();
         automaton.AlertBySeverity(10);

@@ -21,8 +21,6 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
     };
 
     public List<string> Columns { get; set; } = [];
-    public string FileName { get; set; } = string.Empty;
-    public string Query { get; set; } = string.Empty;
     public List<LogRecord> LogRecords { get; set; } = [];
     public List<LogRecord> Results { get; set; } = [];
 
@@ -99,7 +97,7 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
     {
         try
         {
-            Results = dbHelper.DoSql(Query).ToList();
+            Results = dbHelper.DoSql(query).ToList();
             SaveResults();
         }
         catch (SqliteException ex)
@@ -117,7 +115,7 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
 
         var json = JsonSerializer.Serialize(new
         {
-            searchQuery = Query,
+            searchQuery = query,
             resultsCount = Results.Count,
             result = Results
         }, jsonSerializerOptions);
@@ -157,32 +155,51 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
             Console.WriteLine($"No records found with severity {severity}");
         }
     }
-    public void Execute()
+    public void Execute(bool removeDuplicates)
     {
         foreach (var file in files)
         {
-            FileName = file;
             var lines = ReadFile(file);
             ParseFile(lines);
         }
 
-        if (!string.IsNullOrEmpty(query))
+        if (removeDuplicates)
         {
-            Query = query;
+            LogRecords = RemoveDuplicates(LogRecords);
+        }
+
+        if (IsSqlQuery())
+        {
             CheckIfColumnExists(query);
             PerformQuery();
         }
 
-        if (!string.IsNullOrEmpty(column) && !string.IsNullOrEmpty(substring))
+        if (IsSimpleQuery())
         {
-            Query = $"SELECT * FROM LogRecords WHERE RecordValues->>'{column}' LIKE '%{substring}%'";
-            CheckIfColumnExists(Query);
+            // Todo just use linq
+            var simpleQuery = $"SELECT * FROM LogRecords WHERE RecordValues->>'{column}' LIKE '%{substring}%'";
+            CheckIfColumnExists(simpleQuery);
             PerformQuery();
-        }
+        } 
 
         if (!string.IsNullOrEmpty(severity))
         {
             AlertBySeverity(int.Parse(severity));
         }
     }
+
+    private bool IsSimpleQuery()
+    {
+        return !string.IsNullOrEmpty(column) && 
+               !string.IsNullOrEmpty(substring) && 
+                string.IsNullOrEmpty(query);
+    }
+
+    private bool IsSqlQuery()
+    {
+        return !string.IsNullOrEmpty(query) && 
+                string.IsNullOrEmpty(column) && 
+                string.IsNullOrEmpty(substring);
+    }
+
 }
