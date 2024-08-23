@@ -3,8 +3,17 @@ using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 
 namespace AxTask;
-
-public class Automaton(IDbHelper dbHelper)
+/// <summary>
+/// Analyzes log files and performs queries on them
+/// </summary>
+/// <param name="dbHelper"></param>
+/// <param name="files"></param>
+/// <param name="query"></param>
+/// <param name="column"></param>
+/// <param name="substring"></param>
+/// <param name="outputFileName"></param>
+/// <param name="severity"></param>
+public class Automaton(IDbHelper dbHelper, string[] files, string? query, string? column, string? substring, string outputFileName, string? severity)
 {
     private readonly JsonSerializerOptions options = new()
     {
