@@ -17,8 +17,12 @@ internal class Program
         var files = configuration["files"]?.Split(" ");
         var query = configuration["query"];
         var severity = configuration["alert"];
+        var column = configuration["column"];
+        var substring = configuration["substring"];
 
-        if (files == null || files.Length == 0 || string.IsNullOrEmpty(query))
+        if (files == null || 
+            files.Length == 0 || 
+            !IsQueryProvided(query,column,substring))
         {
             PrintHelp();
             return;
@@ -29,11 +33,6 @@ internal class Program
         dbHelper.Clear();
         var automaton = new Automaton(dbHelper);
 
-        if (!automaton.ParseArgs(args))
-        {
-            Console.WriteLine("Invalid arguments");
-            return;
-        }
 
         var logLines = automaton.ReadFile(automaton.FileName);
         automaton.ParseFile(logLines);
@@ -59,9 +58,31 @@ internal class Program
 
         // todo add a command line argument to specify the output file name
     }
+
+    private static bool IsQueryProvided(string? query, string? column, string? substring)
+    {
+        var isQueryProvided = !string.IsNullOrEmpty(query);
+        var isColumnProvided = !string.IsNullOrEmpty(column) && !string.IsNullOrEmpty(substring);
+        return isColumnProvided || isQueryProvided;
+    }
+
     public static void PrintHelp()
     {
-        Console.WriteLine("Usage: AxTask --files \"file1 file2\" ... --query \"<query>\" [--alert <severity>]");
+        Console.WriteLine("Usage: AxTask [options]");
+        Console.WriteLine();
+        Console.WriteLine("Options:");
+        Console.WriteLine("  --files \"file1 file2 ...\"      Specifies the list of CSV files to process.");
+        Console.WriteLine("  --query \"<query>\"              Specifies the SQL query to execute.");
+        Console.WriteLine("  --column \"<column>\"            Specifies the column to search.");
+        Console.WriteLine("  --substring \"<substring>\"      Specifies the substring to search for in the specified column.");
+        Console.WriteLine("  --alert <severity>              Specifies the alert severity level (optional).");
+        Console.WriteLine();
+        Console.WriteLine("Note: You must provide either the --query argument or both the --column and --substring arguments.");
+        Console.WriteLine();
+        Console.WriteLine("Examples:");
+        Console.WriteLine("  AxTask --files \"file1.csv file2.csv\" --query \"SELECT * FROM LogRecords WHERE RecordValues->>'signatureId' LIKE '%4608%'\"");
+        Console.WriteLine("  AxTask --files \"file1.csv file2.csv\" --column \"signatureId\" --substring \"4608\"");
+        Console.WriteLine("  AxTask --files \"file1.csv file2.csv\" --query \"SELECT * FROM LogRecords\" --alert 10");
     }
     public static bool ParseArgs(string[] args)
     {
