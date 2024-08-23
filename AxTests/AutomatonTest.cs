@@ -106,7 +106,7 @@ public class AutomatonTest
             };
 
         // Act
-        automaton.ParseFile(lines);
+        automaton.ParseLines(lines);
 
         // Assert
         // Add your assertions here

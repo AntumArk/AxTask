@@ -19,6 +19,10 @@
     "Example": {
       "commandName": "Project",
       "commandLineArgs": "20220601182758.csv \"SELECT * FROM LogRecords WHERE RecordValues->>'signatureId' LIKE '%4608%'\""
+    },
+    "Args": {
+      "commandName": "Project",
+      "commandLineArgs": "--files \"20220601182758.csv 2022060asds1182758.csv\" --query \"SELECT * FROM LogRecords WHERE RecordValues->>'signatureId' LIKE '%4608%'\" --output \"output.json\""
     }
   }
 }

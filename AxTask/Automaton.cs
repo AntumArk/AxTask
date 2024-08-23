@@ -3,8 +3,17 @@ using System.Text.RegularExpressions;
 using Microsoft.Data.Sqlite;
 
 namespace AxTask;
-
-public class Automaton(IDbHelper dbHelper)
+/// <summary>
+/// Analyzes log files and performs queries on them
+/// </summary>
+/// <param name="dbHelper"></param>
+/// <param name="files"></param>
+/// <param name="query"></param>
+/// <param name="column"></param>
+/// <param name="substring"></param>
+/// <param name="outputFileName"></param>
+/// <param name="severity"></param>
+public class Automaton(IDbHelper dbHelper, string[] files, string? query, string? column, string? substring, string outputFileName, string? severity)
 {
     private readonly JsonSerializerOptions options = new()
     {
@@ -12,8 +21,6 @@ public class Automaton(IDbHelper dbHelper)
     };
 
     public List<string> Columns { get; set; } = [];
-    public string FileName { get; set; } = string.Empty;
-    public string Query { get; set; } = string.Empty;
     public List<LogRecord> LogRecords { get; set; } = [];
     public List<LogRecord> Results { get; set; } = [];
 
@@ -38,25 +45,11 @@ public class Automaton(IDbHelper dbHelper)
         return lines.ToList();
     }
 
-    public bool ParseArgs(string[] args)
-    {
-        if (args.Length != 2)
-        {
-            PrintHelp();
-            return false;
-        }
+   
 
-        FileName = args[0];
-        Query = args[1];
-        return true;
-    }
+  
 
-    public void PrintHelp()
-    {
-        Console.WriteLine("Usage: AxTask <filename> \"<query>\"");
-    }
-
-    public void ParseFile(IEnumerable<string> lines)
+    public void ParseLines(IEnumerable<string> lines)
     {
         var linesList = lines.ToList();
         var header = GetHeaderColumns(linesList);
@@ -104,13 +97,12 @@ public class Automaton(IDbHelper dbHelper)
     {
         try
         {
-            Results = dbHelper.DoSql(Query).ToList();
+            Results = dbHelper.DoSql(query).ToList();
             SaveResults();
         }
         catch (SqliteException ex)
         {
             Console.WriteLine($"SQL Error: {ex.Message}");
-            PrintHelp();
         }
     }
 
@@ -123,7 +115,7 @@ public class Automaton(IDbHelper dbHelper)
 
         var json = JsonSerializer.Serialize(new
         {
-            searchQuery = Query,
+            searchQuery = query,
             resultsCount = Results.Count,
             result = Results
         }, jsonSerializerOptions);
@@ -163,4 +155,62 @@ public class Automaton(IDbHelper dbHelper)
             Console.WriteLine($"No records found with severity {severity}");
         }
     }
+    public void Execute(bool removeDuplicates)
+    {
+        var lines = ReadFiles();
+
+        ParseLines(lines);
+
+        if (removeDuplicates)
+        {
+            LogRecords = RemoveDuplicates(LogRecords);
+        }
+
+        dbHelper.SaveLogRecords(LogRecords); // Save log records to the database, long-running operation
+
+        if (IsSqlQuery())
+        {
+            CheckIfColumnExists(query);
+            PerformQuery();
+        }
+
+        if (IsSimpleQuery())
+        {
+            // Todo just use linq
+            var simpleQuery = $"SELECT * FROM LogRecords WHERE RecordValues->>'{column}' LIKE '%{substring}%'";
+            CheckIfColumnExists(simpleQuery);
+            PerformQuery();
+        } 
+
+        if (!string.IsNullOrEmpty(severity))
+        {
+            AlertBySeverity(int.Parse(severity));
+        }
+    }
+
+    private List<string> ReadFiles()
+    {
+        var lines = new List<string>();
+        foreach (var file in files)
+        {
+            lines.AddRange(ReadFile(file));            
+        }
+
+        return lines;
+    }
+
+    private bool IsSimpleQuery()
+    {
+        return !string.IsNullOrEmpty(column) && 
+               !string.IsNullOrEmpty(substring) && 
+                string.IsNullOrEmpty(query);
+    }
+
+    private bool IsSqlQuery()
+    {
+        return !string.IsNullOrEmpty(query) && 
+                string.IsNullOrEmpty(column) && 
+                string.IsNullOrEmpty(substring);
+    }
+
 }
