@@ -159,6 +159,8 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
     {
         var lines = ReadFiles();
 
+        if (lines.Count == 0) return;
+
         ParseLines(lines);
 
         if (removeDuplicates)
