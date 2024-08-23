@@ -116,7 +116,7 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
 
         var json = JsonSerializer.Serialize(new
         {
-            searchQuery = query,
+            searchQuery = IsSqlQuery() ? query : $"column{column} substring{substring}",
             resultsCount = Results.Count,
             result = Results
         }, jsonSerializerOptions);
