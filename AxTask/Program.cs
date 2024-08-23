@@ -21,7 +21,7 @@ internal class Program
         var removeDuplicates = args.Contains("-r");
 
 
-        if (AreArgumentsInvalid(files, query, column, substring, outputFileName)) return;
+        if (AreArgumentsInvalid(files, query, column, substring, outputFileName,severity)) return;
 
         var dbHelper = new DbHelper(new LogContext());
         dbHelper.Clear(); // Clear the database before starting
@@ -38,26 +38,18 @@ internal class Program
             throw;
         }
 
-        automaton.PerformQuery();
-        automaton.AlertBySeverity(10);
-
-        // Bonus
-        // todo add multiple file support
-        // todo add simple column search
-
-        // todo add a command line argument to specify the output file name
     }
 
     private static bool AreArgumentsInvalid(string[]? files, string? query, string? column, string? substring,
-        string? outputFileName)
+        string? outputFileName, string? severity)
     {
         if (files != null &&
             files.Length != 0 &&
             IsQueryProvided(query, column, substring) &&
-            IsOutputFilePathCorrect(outputFileName)) return false;
+            IsOutputFilePathCorrect(outputFileName) &&
+            int.TryParse(severity, out _)) return false;
         PrintHelp();
         return true;
-
     }
 
     private static bool IsOutputFilePathCorrect(string? outputFileName)
