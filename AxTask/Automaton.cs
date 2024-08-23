@@ -121,7 +121,7 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
             result = Results
         }, jsonSerializerOptions);
 
-        File.WriteAllText(Results.Count + ".json", json);
+        File.WriteAllText(outputFileName, json);
 
         Console.WriteLine("Query results: ");
         Console.WriteLine(json);
