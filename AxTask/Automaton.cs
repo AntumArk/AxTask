@@ -50,10 +50,6 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
         return lines.ToList();
     }
 
-   
-
-  
-
     public void ParseLines(IEnumerable<string> lines)
     {
         var linesList = lines.ToList();
@@ -102,7 +98,7 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
     {
         try
         {
-            Results = dbHelper.DoSql(query).ToList();
+            Results = dbHelper.DoSql(query!).ToList();
             SaveResults();
         }
         catch (SqliteException ex)
@@ -136,7 +132,6 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
         };
         dbHelper.SaveQueryResults(queryResult);
     }
-    // ...
 
     public void AlertBySeverity(int severityValue)
     {
