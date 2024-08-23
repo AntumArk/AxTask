@@ -49,7 +49,7 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
 
   
 
-    public void ParseFile(IEnumerable<string> lines)
+    public void ParseLines(IEnumerable<string> lines)
     {
         var linesList = lines.ToList();
         var header = GetHeaderColumns(linesList);
@@ -157,11 +157,9 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
     }
     public void Execute(bool removeDuplicates)
     {
-        foreach (var file in files)
-        {
-            var lines = ReadFile(file);
-            ParseFile(lines);
-        }
+        var lines = ReadFiles();
+
+        ParseLines(lines);
 
         if (removeDuplicates)
         {
@@ -186,6 +184,17 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
         {
             AlertBySeverity(int.Parse(severity));
         }
+    }
+
+    private List<string> ReadFiles()
+    {
+        var lines = new List<string>();
+        foreach (var file in files)
+        {
+            lines.AddRange(ReadFile(file));            
+        }
+
+        return lines;
     }
 
     private bool IsSimpleQuery()
