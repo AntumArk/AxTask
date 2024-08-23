@@ -38,23 +38,9 @@ public class Automaton(IDbHelper dbHelper)
         return lines.ToList();
     }
 
-    public bool ParseArgs(string[] args)
-    {
-        if (args.Length != 2)
-        {
-            PrintHelp();
-            return false;
-        }
+   
 
-        FileName = args[0];
-        Query = args[1];
-        return true;
-    }
-
-    public void PrintHelp()
-    {
-        Console.WriteLine("Usage: AxTask <filename> \"<query>\"");
-    }
+  
 
     public void ParseFile(IEnumerable<string> lines)
     {
@@ -110,7 +96,6 @@ public class Automaton(IDbHelper dbHelper)
         catch (SqliteException ex)
         {
             Console.WriteLine($"SQL Error: {ex.Message}");
-            PrintHelp();
         }
     }
 
