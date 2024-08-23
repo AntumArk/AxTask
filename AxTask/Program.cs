@@ -20,14 +20,7 @@ internal class Program
         var outputFileName = configuration["output"];
 
 
-        if (files == null ||
-            files.Length == 0 ||
-            !IsQueryProvided(query, column, substring) ||
-            !IsOutputFilePathCorrect(outputFileName))
-        {
-            PrintHelp();
-            return;
-        }
+        if (AreArgumentsInvalid(files, query, column, substring, outputFileName)) return;
 
         Console.WriteLine("Hello, World!");
         IDbHelper dbHelper = new DbHelper(new LogContext());
@@ -57,6 +50,18 @@ internal class Program
         // todo add simple column search
 
         // todo add a command line argument to specify the output file name
+    }
+
+    private static bool AreArgumentsInvalid(string[]? files, string? query, string? column, string? substring,
+        string? outputFileName)
+    {
+        if (files != null &&
+            files.Length != 0 &&
+            IsQueryProvided(query, column, substring) &&
+            IsOutputFilePathCorrect(outputFileName)) return false;
+        PrintHelp();
+        return true;
+
     }
 
     private static bool IsOutputFilePathCorrect(string? outputFileName)
@@ -93,16 +98,5 @@ internal class Program
         Console.WriteLine("  AxTask --files \"file1.csv file2.csv\" --query \"SELECT * FROM LogRecords\" --alert 10 --output \"output.json\"");
     }
 
-    public static bool ParseArgs(string[] args)
-    {
-        if (args.Length != 2)
-        {
-            PrintHelp();
-            return false;
-        }
 
-        //FileName = args[0];
-        //Query = args[1];
-        return true;
-    }
 }
