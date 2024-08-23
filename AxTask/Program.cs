@@ -47,9 +47,19 @@ internal class Program
             files.Length != 0 &&
             IsQueryProvided(query, column, substring) &&
             IsOutputFilePathCorrect(outputFileName) &&
-            int.TryParse(severity, out _)) return false;
+            IsSeverityANumber(severity)) return false;
         PrintHelp();
         return true;
+    }
+
+    /// <summary>
+    /// Checks if the severity is a number, empty or null string is also valid
+    /// </summary>
+    /// <param name="severity"></param>
+    /// <returns></returns>
+    private static bool IsSeverityANumber(string? severity)
+    {
+        return string.IsNullOrEmpty(severity) || int.TryParse(severity, out _);
     }
 
     private static bool IsOutputFilePathCorrect(string? outputFileName)
