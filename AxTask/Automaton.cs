@@ -32,9 +32,14 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
 
         foreach (Match match in matches)
         {
-            var column = match.Groups["column"].Value;
-            if (!columns.Contains(column)) throw new InvalidOperationException($"Column '{column}' does not exists");
+            var value = match.Groups["column"].Value;
+            if (!columns.Contains(value)) throw new InvalidOperationException($"Column '{value}' does not exist");
         }
+    }
+    public void CheckIfColumnExists()
+    {
+        if (string.IsNullOrEmpty(column) || !LogRecords.First().RecordValues.ContainsKey(column)) 
+            throw new InvalidOperationException($"Column '{column}' does not exist");
     }
 
     public IEnumerable<string> ReadFile(string path)
@@ -170,21 +175,32 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
 
         if (IsSqlQuery())
         {
-            CheckIfColumnExists(query);
+            CheckIfColumnExists(query!);
             PerformQuery();
         }
 
         if (IsSimpleQuery())
         {
-            // Todo just use linq
-            var simpleQuery = $"SELECT * FROM LogRecords WHERE RecordValues->>'{column}' LIKE '%{substring}%'";
-            CheckIfColumnExists(simpleQuery);
-            PerformQuery();
+            CheckIfColumnExists();
+            PerformSimpleQuery();
         } 
 
         if (!string.IsNullOrEmpty(severity))
         {
             AlertBySeverity(int.Parse(severity));
+        }
+    }
+
+    private void PerformSimpleQuery()
+    {
+        try
+        {
+            Results = LogRecords.Where(r => r.RecordValues[column!].Contains(substring!)).ToList();
+            SaveResults();
+        }
+        catch (SqliteException ex)
+        {
+            Console.WriteLine($"LINQ Error: {ex.Message}");
         }
     }
 
