@@ -22,17 +22,14 @@ internal class Program
 
         if (AreArgumentsInvalid(files, query, column, substring, outputFileName)) return;
 
-        Console.WriteLine("Hello, World!");
-        IDbHelper dbHelper = new DbHelper(new LogContext());
-        dbHelper.Clear();
-        var automaton = new Automaton(dbHelper);
+        var dbHelper = new DbHelper(new LogContext());
+        dbHelper.Clear(); // Clear the database before starting
 
-
-        var logLines = automaton.ReadFile(automaton.FileName);
-        automaton.ParseFile(logLines);
+        var automaton = new Automaton(dbHelper, files!, query, column, substring, outputFileName!, severity);
+                
         try
         {
-            automaton.CheckIfColumnExists(automaton.Query);
+            automaton.Execute();
         }
         catch (Exception e)
         {

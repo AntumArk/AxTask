@@ -157,4 +157,32 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
             Console.WriteLine($"No records found with severity {severity}");
         }
     }
+    public void Execute()
+    {
+        foreach (var file in files)
+        {
+            FileName = file;
+            var lines = ReadFile(file);
+            ParseFile(lines);
+        }
+
+        if (!string.IsNullOrEmpty(query))
+        {
+            Query = query;
+            CheckIfColumnExists(query);
+            PerformQuery();
+        }
+
+        if (!string.IsNullOrEmpty(column) && !string.IsNullOrEmpty(substring))
+        {
+            Query = $"SELECT * FROM LogRecords WHERE RecordValues->>'{column}' LIKE '%{substring}%'";
+            CheckIfColumnExists(Query);
+            PerformQuery();
+        }
+
+        if (!string.IsNullOrEmpty(severity))
+        {
+            AlertBySeverity(int.Parse(severity));
+        }
+    }
 }
