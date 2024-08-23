@@ -18,6 +18,7 @@ internal class Program
         var column = configuration["column"];
         var substring = configuration["substring"];
         var outputFileName = configuration["output"];
+        var removeDuplicates = args.Contains("-r");
 
 
         if (AreArgumentsInvalid(files, query, column, substring, outputFileName)) return;
@@ -86,13 +87,14 @@ internal class Program
         Console.WriteLine("  --substring \"<substring>\"      Specifies the substring to search for in the specified column (required).");
         Console.WriteLine("  --output <filename>             Specifies the output file name (required).");
         Console.WriteLine("  --alert <severity>              Specifies the alert severity level (optional).");
+        Console.WriteLine("  -r                              Removes duplicate log records (optional).");
         Console.WriteLine();
         Console.WriteLine("Note: You must provide either the --query argument or both the --column and --substring arguments.");
         Console.WriteLine();
         Console.WriteLine("Examples:");
         Console.WriteLine("  AxTask --files \"file1.csv file2.csv\" --query \"SELECT * FROM LogRecords WHERE RecordValues->>'signatureId' LIKE '%4608%'\"");
         Console.WriteLine("  AxTask --files \"file1.csv file2.csv\" --column \"signatureId\" --substring \"4608\"");
-        Console.WriteLine("  AxTask --files \"file1.csv file2.csv\" --query \"SELECT * FROM LogRecords\" --alert 10 --output \"output.json\"");
+        Console.WriteLine("  AxTask --files \"file1.csv file2.csv\" --query \"SELECT * FROM LogRecords\" --alert 10 --output \"output.json\" -r");
     }
 
 
