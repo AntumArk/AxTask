@@ -138,13 +138,13 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
     }
     // ...
 
-    public void AlertBySeverity(int severity)
+    public void AlertBySeverity(int severityValue)
     {
-        var results = dbHelper.GetBySeverity(severity);
+        var results = dbHelper.GetBySeverity(severityValue);
         if (results.Count > 0)
         {
             Console.BackgroundColor = ConsoleColor.Red; // Set console background color to red
-            Console.WriteLine($"Found {results.Count} records with severity {severity} or higher");
+            Console.WriteLine($"Found {results.Count} records with severityValue {severityValue} or higher");
 
 
             foreach (var result in results)
@@ -157,7 +157,7 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
         }
         else
         {
-            Console.WriteLine($"No records found with severity {severity}");
+            Console.WriteLine($"No records found with severityValue {severityValue}");
         }
     }
     public void Execute(bool removeDuplicates)
