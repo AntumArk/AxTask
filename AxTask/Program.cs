@@ -38,7 +38,6 @@ internal class Program
             throw;
         }
 
-        dbHelper.SaveLogRecords(automaton.LogRecords);
         automaton.PerformQuery();
         automaton.AlertBySeverity(10);
 

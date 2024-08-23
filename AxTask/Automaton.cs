@@ -166,6 +166,8 @@ public class Automaton(IDbHelper dbHelper, string[] files, string? query, string
             LogRecords = RemoveDuplicates(LogRecords);
         }
 
+        dbHelper.SaveLogRecords(LogRecords); // Save log records to the database, long-running operation
+
         if (IsSqlQuery())
         {
             CheckIfColumnExists(query);
