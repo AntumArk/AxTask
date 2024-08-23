@@ -43,13 +43,33 @@ internal class Program
     private static bool AreArgumentsInvalid(string[]? files, string? query, string? column, string? substring,
         string? outputFileName, string? severity)
     {
-        if (files != null &&
-            files.Length != 0 &&
-            IsQueryProvided(query, column, substring) &&
-            IsOutputFilePathCorrect(outputFileName) &&
-            IsSeverityANumber(severity)) return false;
+        var invalidArguments = new List<string>();
+
+        if (files == null || files.Length == 0)
+        {
+            invalidArguments.Add("--files");
+        }
+
+        if (!IsQueryProvided(query, column, substring))
+        {
+            invalidArguments.Add("--query or --column and --substring");
+        }
+
+        if (!IsOutputFilePathCorrect(outputFileName))
+        {
+            invalidArguments.Add("--output");
+        }
+
+        if (!IsSeverityANumber(severity))
+        {
+            invalidArguments.Add("--alert");
+        }
+
+        if (invalidArguments.Count == 0) return false;
+        Console.WriteLine("Invalid arguments: " + string.Join(", ", invalidArguments));
         PrintHelp();
         return true;
+
     }
 
     /// <summary>
@@ -66,7 +86,7 @@ internal class Program
     {
         if (string.IsNullOrEmpty(outputFileName)) return false;
         var outputDirectory = Path.GetDirectoryName(outputFileName);
-        return Directory.Exists(outputDirectory);
+        return string.IsNullOrEmpty(outputDirectory) || Directory.Exists(outputDirectory);
     }
 
     private static bool IsQueryProvided(string? query, string? column, string? substring)

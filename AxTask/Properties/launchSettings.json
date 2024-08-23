@@ -20,9 +20,13 @@
       "commandName": "Project",
       "commandLineArgs": "20220601182758.csv \"SELECT * FROM LogRecords WHERE RecordValues->>'signatureId' LIKE '%4608%'\""
     },
-    "Args": {
+    "SimpleQuery": {
       "commandName": "Project",
-      "commandLineArgs": "--files \"20220601182758.csv 2022060asds1182758.csv\" --query \"SELECT * FROM LogRecords WHERE RecordValues->>'signatureId' LIKE '%4608%'\" --output \"output.json\""
+      "commandLineArgs": "--files \"20220601182758.csv\" --column signatureId --substring \"4608\" --output \"outputSimple.json\" --alert 10"
+    },
+    "SqlQuery": {
+      "commandName": "Project",
+      "commandLineArgs": "--files \"20220601182758.csv\" --query \"SELECT * FROM LogRecords WHERE RecordValues->>'signatureId' LIKE '%4608%'\" --output \"output.json\" --alert 10"
     }
   }
 }
